@@ -54,6 +54,7 @@ class Compiler {
       return node.nodeType === 1;
    }
 }
+console.log("skdfjlsdkfj")
 
 CompileUtils = {
    getVal(vm, expr) {
