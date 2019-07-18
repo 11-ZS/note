@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <title></title>
+
+      <style media="screen">
+
+      .button{
+         position:relative;
+         display:inline-flex;
+         flex-direction: column;
+         cursor:pointer;
+         overflow:hidden;
+         border:1px solid blue;
+         padding:0 10px;
+      }
+      .button input{
+         display:none;
+      }
+      .button input:checked + .content{
+
+         transform:translateY(-36px);
+         transition:1s;
+      }
+      .content{
+         line-height: 36px;
+         font-size:20px;
+         font-family: sans-serif;
+         height:36px;
+         box-sizing:border-box;
+         position: relative;
+         text-align:center;
+         transition:1s;
+
+
+      }
+      .content::after{
+         content:attr(content2);
+
+         display:block;
+         box-sizing: border-box;
+         position: relative;
+         text-align:center;
+      }
+
+
+      </style>
+   </head>
+   <body>
+       <label class="button">
+          <input type="checkbox" name="" value="">
+          <span class="content" content2="开启中">开启</span>
+
+      </label>
+
+   </body>
+</html>
