@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+   <head>
+      <meta charset="utf-8">
+      <title></title>
+   </head>
+   <body>
+      <div id="app">
+
+         <input x-value="value" x-class='in'>
+      </div>
+
+
+      <script type="text/javascript">
+
+
+         class Xi{
+            constructor(options){
+               this.$el = options.el;
+               this.$data = options.data;
+               this.$methods= options.methods;
+
+               this.$el=this.getEl()
+               this.init();
+               return new Proxy(this,{
+                  get(target,key){
+                     if(!key.startsWith("$")){
+                        let obj = target.$data[key]||target.$methods[key];
+                        return obj;
+                     }else{
+                        return target[key];
+                     }
+                  }
+               })
+
+            }
+            init(){
+
+               this.compile()
+            }
+            getEl(){
+               return this.$el.nodeType===1?this.$el:document.querySelector(this.$el);
+            }
+            compile(){
+               let fragment = document.createDocumentFragment();
+               let firstChild;
+
+               while(firstChild=this.$el.firstChild){
+                  fragment.appendChild(firstChild);
+               }
+               [...fragment.childNodes].forEach(node=>{
+                  if(node.nodeType===1){
+                     this.compileAttribute(node)
+                  }else{
+                     this.compileContent(node);
+                  }
+               })
+
+               this.$el.appendChild(fragment);
+            }
+            compileAttribute(node){
+               const attrs = node.attributes;
+               [...attrs].forEach(attr=>{
+                  if(attr.name.startsWith('x-')){
+                     let [,key] = attr.name.split('-')
+                     let expr = attr.value;
+                     console.log(key,attr.value)
+                     CompileUtils[key](this.$data,expr,node);
+
+                  }
+               })
+            }
+            compileContent(node){
+
+            }
+
+         }
+         const CompileUtils = {
+            value(data,expr,node){
+               let fn = this.getMethod('value');
+               let value = this.getVal(data,expr);
+               // console.log(data);
+               new Watcher(data,expr,()=>{
+                  fn(node,this.getVal());
+               })
+               fn(node,value);
+            },
+            class(data,expr,node){
+
+            },
+            getVal(data,expr){
+               return expr.split('.').reduce((prev,curr)=>{
+                  return prev[curr];
+               },data)
+            },
+            getMethod(name){
+               return function(node,value){
+                  node[name] = value;
+               }
+            }
+         }
+
+         var app = new Xi({
+            el:"#app",
+            data:{
+               value:'vvvvv',
+               class:'red center',
+
+            },
+            methods:{
+               method1(){
+                  console.log('run----->','method1');
+               }
+            }
+         })
+         console.dir(app.$el);
+
+      </script>
+   </body>
+</html>
