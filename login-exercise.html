@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <meta http-equiv="X-UA-Compatible" content="ie=edge">
+   <title>Document</title>
+   <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.js"></script>
+</head>
+<body>
+
+
+   <script type="text/javascript">
+
+      class Validate{
+         constructor(info){
+            this.rules=[];
+         }
+         validate(info){
+            let _this = this;
+            this.rules.forEach(function(rule){
+               console.log('validate ',rule.target);
+               //这里还应该改进
+               if(rule.rule){
+                  if(!rule.rule.test(info[rule.target])){
+                     _this.returnError(rule)
+                  }
+               }
+               if(rule.type){
+                  if(rule.type!==Opject.prototype.toString.call(info[rule.target]).replace(/\[object\s|\]/,'')){
+                     _this.returnError(rule);
+                  }
+               }
+               if(rule.test){
+
+                  if(!rule.test(info[rule.target])){
+                     _this.returnError(rule);
+                  }
+               }
+            })
+         }
+         push(rule){
+            this.rules.push(rule);
+         }
+
+         returnError(rule){
+            throw new Error(rule.errorMessage?rule.errorMessage:rule.target+"error");
+         }
+
+      }
+      let info = {
+         type:0,
+         code:'123',
+         name:'sdkjl',
+         phone:'13244421112',
+         isMan:1,
+         birday:20180205,
+         birdayisChina:0,
+         password:'asdasd'
+      }
+      let validate = new Validate()
+      validate.push({
+         target:'name',rule:/\w{2,10}/,type:"String",require:true,errorMessage:'名称必须为2-10个字符'
+      })
+      validate.push({
+         target:'phone',rule:/^13\d{9}$/,type:"Number",require:true
+      })
+      validate.push({
+         target:'isMan',rule:/0|1/,type:'Number',
+      })
+      validate.push({
+         target:'birday',rule:/^20[0-9][0-9][0-1][0-9][0-3][0-9]$/
+      })
+      validate.push({
+         target:'password',rule:/^\w{6-16}$/
+      })
+
+    if(validate.validate(info)){
+      //addAccount
+   }
+   </script>
+
+</body>
+</html>
