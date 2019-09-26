@@ -1,84 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-   <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-   <title>Document</title>
-   <script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.js"></script>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>Document</title>
+	<script src="https://cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.js"></script>
 </head>
+
 <body>
+	<script type="text/javascript">
+		class Validate {
+			constructor(info) {
+				this.rules = [];
+			}
+			async validate(info) {
+				let _this = this;
+				let isMatch = true;
+				this.rules.forEach(function (rule) {
+
+					//这里要使用兼容就很难搞了,先这样
+					let { target, errorMessage, require,test, ...r } = rule;
+
+					let value = info[target];
+					for (let k in r) {
+
+						if (!_this[k](value, r[k])) {
+							isMatch = false;
+							console.log(k, value);
+						}
+					}
+					if(test){
+						test(value)
+					}
+				})
+				return isMatch;
+			}
+			rule(value, rule) {
+				return rule.test(value);
+			}
+			type(value, type) {
+				return type === Object.prototype.toString.call(value).replace(/\[object\s|\]/g, '')
+			}
+
+			push(rule) {
+				this.rules.push(rule);
+			}
+			returnError(rule) {
+				throw new Error(rule.errorMessage ? rule.errorMessage : rule.target + " error");
+			}
+		}
 
 
-   <script type="text/javascript">
 
-      class Validate{
-         constructor(info){
-            this.rules=[];
-         }
-         validate(info){
-            let _this = this;
-            this.rules.forEach(function(rule){
-               console.log('validate ',rule.target);
-               //这里还应该改进
-               if(rule.rule){
-                  if(!rule.rule.test(info[rule.target])){
-                     _this.returnError(rule)
-                  }
-               }
-               if(rule.type){
-                  if(rule.type!==Opject.prototype.toString.call(info[rule.target]).replace(/\[object\s|\]/,'')){
-                     _this.returnError(rule);
-                  }
-               }
-               if(rule.test){
+		let validate = new Validate()
+		validate.push({
+			target: 'name', rule: /\w{2,10}/, type: "String", require: true, errorMessage: '名称必须为2-10个字符'
+		})
+		validate.push({
+			target: 'phone', rule: /^13\d{9}$/, type: "String", require: true
+		})
+		validate.push({
+			target: 'isMan', rule: /0|1/, type: 'Number',
+		})
+		validate.push({
+			//这里有bug
+			target: 'birday', rule: /^20[0-9][0-9][0-1][0-9][0-3][0-9]$/
+		})
+		validate.push({
+			target: 'password', rule: /^\w{6,16}$/
+		})
 
-                  if(!rule.test(info[rule.target])){
-                     _this.returnError(rule);
-                  }
-               }
-            })
-         }
-         push(rule){
-            this.rules.push(rule);
-         }
 
-         returnError(rule){
-            throw new Error(rule.errorMessage?rule.errorMessage:rule.target+"error");
-         }
+		let r = /^.{8}(.+).{8}$/;
+		let sid = r.exec(md5(new Date().getTime() + "&" + Math.random() + navigator.userAgent))[1];
 
-      }
-      let info = {
-         type:0,
-         code:'123',
-         name:'sdkjl',
-         phone:'13244421112',
-         isMan:1,
-         birday:20180205,
-         birdayisChina:0,
-         password:'asdasd'
-      }
-      let validate = new Validate()
-      validate.push({
-         target:'name',rule:/\w{2,10}/,type:"String",require:true,errorMessage:'名称必须为2-10个字符'
-      })
-      validate.push({
-         target:'phone',rule:/^13\d{9}$/,type:"Number",require:true
-      })
-      validate.push({
-         target:'isMan',rule:/0|1/,type:'Number',
-      })
-      validate.push({
-         target:'birday',rule:/^20[0-9][0-9][0-1][0-9][0-3][0-9]$/
-      })
-      validate.push({
-         target:'password',rule:/^\w{6-16}$/
-      })
+		function addAccount(info) {
+	 
+			validate.validate(info).then(result => { 
+				if (result) {
+					info.sid = sid 
+					info.password = md5(info.password+"&1f")
+					//post
+				} else {
 
-    if(validate.validate(info)){
-      //addAccount
-   }
-   </script>
+				}
+			})
+		}
+		function login(info) {
+			validate.validate(info).then(result=>{
+				if(result){
+					info.sid = sid;
+				}
+			})
+		}
+
+		function loginout(info){
+			//...
+			// post sid
+		}
+		function editAccount(olduser,newuser,type){
+			let editValidate = new Validate();
+			editAccount.push({
+				 test:function(){
+					return type!=null//type为job或stop的编号不能为空 
+				 }
+			})
+			editValidate.validate(newuser).then(result=>{
+
+				//post request
+				//current user = result//服务器返回新的用户到给当前用户
+			})
+		}
+
+
+		let info = {
+			type: 0,
+			code: '123',
+			name: 'sdkjl',
+			phone: '13000000000',
+			isMan: 1,
+			birday: 20180205,
+			birdayisChina: 0,
+			password: 'asdasd'
+		}
+
+		addAccount(info);
+
+	</script>
 
 </body>
+
 </html>
