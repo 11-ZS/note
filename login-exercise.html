@@ -21,7 +21,7 @@
 				this.rules.forEach(function (rule) {
 
 					//这里要使用兼容就很难搞了,先这样
-					let { target, errorMessage, require,test, ...r } = rule;
+					let { target, errorMessage, require, test, ...r } = rule;
 
 					let value = info[target];
 					for (let k in r) {
@@ -31,7 +31,7 @@
 							console.log(k, value);
 						}
 					}
-					if(test){
+					if (test) {
 						test(value)
 					}
 				})
@@ -77,11 +77,11 @@
 		let sid = r.exec(md5(new Date().getTime() + "&" + Math.random() + navigator.userAgent))[1];
 
 		function addAccount(info) {
-	 
-			validate.validate(info).then(result => { 
+
+			validate.validate(info).then(function(result) {
 				if (result) {
-					info.sid = sid 
-					info.password = md5(info.password+"&1f")
+					info.sid = sid
+					info.password = md5(info.password + "&1f")
 					//post
 				} else {
 
@@ -89,25 +89,25 @@
 			})
 		}
 		function login(info) {
-			validate.validate(info).then(result=>{
-				if(result){
+			validate.validate(info).then(function(result) {
+				if (result) {
 					info.sid = sid;
 				}
 			})
 		}
 
-		function loginout(info){
+		function loginout(info) {
 			//...
 			// post sid
 		}
-		function editAccount(olduser,newuser,type){
+		function editAccount(olduser, newuser, type) {
 			let editValidate = new Validate();
 			editAccount.push({
-				 test:function(){
-					return type!=null//type为job或stop的编号不能为空 
-				 }
+				test: function () {
+					return type != null//type为job或stop的编号不能为空 
+				}
 			})
-			editValidate.validate(newuser).then(result=>{
+			editValidate.validate(newuser).then(function(result) {
 
 				//post request
 				//current user = result//服务器返回新的用户到给当前用户
