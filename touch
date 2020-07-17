@@ -1,0 +1,54 @@
+ directives: {
+        drag: {
+            bind(el, binding, vnode) {
+                setTimeout(() => {
+                    let parent = el.parentElement;
+                    let width = el.offsetWidth;
+                    console.log(vnode.context._data);
+
+                    let scrollLeftLimit = width - parent.offsetWidth;
+                    let offsetX = null;
+                    el.addEventListener("touchstart",e=>{
+                        console.log(offsetX =e.changedTouches[0].clientX)
+                    })
+                    el.addEventListener("touchmove", e => {
+                        let curCliX = e.changedTouches[0].clientX
+                        let offset = curCliX-offsetX;
+                            offsetX = curCliX
+                        let currOffset = vnode.context._data.chiNavLeft;
+                        let mix =  currOffset+offset 
+                        
+                        if(mix<-scrollLeftLimit){
+                            console.log(mix = -scrollLeftLimit)
+                        }else if(mix>0){
+                            console.log(mix=0);
+                        }else{
+                            console.log(mix);
+                        }
+                        vnode.context._data.chiNavLeft= mix;
+                        
+
+                        // let currOffsetX = e.changedTouches[0].clientX-offsetX;
+                        // let currResult = vnode.context._data.chiNavLeft-currOffsetX;
+
+                        // if(currResult<-scrollLeftLimit){
+                        //     currResult = -scrollLeftLimit 
+                        // }else if(currResult>0){
+                        //     currResult=0;
+                        // }
+
+                        // el.style.transform = `translateX(${currResult})`;
+                        // vnode.context._data.chiNavLeft= e.changedTouches[0].screenX;
+                        // console.dir(currResult);
+                    });
+                    el.addEventListener("touchend",e=>{
+                        offsetX=null;
+                        console.log('end')
+                    })
+                }, 100);
+                // el.addEventListener("touchcancel",function(){
+                //     console.log('cancel')
+                // })
+            }
+        }
+    },
